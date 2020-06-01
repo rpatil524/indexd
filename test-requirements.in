@@ -1,0 +1,6 @@
+mock~=3.0.5
+pytest~=3.10.1
+pytest-flask~=0.15.0
+pytest-cov~=2.9
+PyYAML~=5.3
+swagger_spec_validator~=2.6
