@@ -172,7 +172,7 @@ def indexd_to_drs(record, expand=False, list_drs=False):
             )
 
     # parse out checksums
-    parse_checksums(record, drs_object)
+    drs_object["checksums"] = parse_checksums(record)
 
     return drs_object
 
@@ -222,8 +222,7 @@ def bundle_to_drs(record, expand=False, is_content=False):
             else []
         )
         version = record["version"] if "version" in record else ""
-        drs_object["checksums"] = []
-        parse_checksums(record, drs_object)
+        drs_object["checksums"] = parse_checksums(record)
 
         created_time = (
             record["created_date"]
@@ -246,20 +245,23 @@ def bundle_to_drs(record, expand=False, is_content=False):
     return drs_object
 
 
-def parse_checksums(record, drs_object):
-    if "hashes" in record:
-        for k in record["hashes"]:
-            drs_object["checksums"].append({"checksum": record["hashes"][k], "type": k})
-    else:
-        if "checksums" in record:
-            for checksum in record["checksums"]:
-                drs_object["checksums"].append(
-                    {"checksum": checksum["checksum"], "type": checksum["type"]}
-                )
+def parse_checksums(record):
+    try:
+        if "hashes" in record:  # if indexd record
+            return [
+                {"checksum": record["hashes"][t], "type": t} for t in record["hashes"]
+            ]
+        elif "checksums" in record:  # if bundle record
+            return [
+                {"checksum": checksum["checksum"], "type": checksum["type"]}
+                for checksum in record["checksums"]
+            ]
         else:
-            drs_object["checksums"].append(
-                {"checksum": record["checksum"], "type": "md5"}
-            )
+            # TODO error no `checksums` field
+            pass
+    except KeyError:
+        # TODO error malformed `checksums` field
+        pass
 
 
 @blueprint.errorhandler(UserError)
