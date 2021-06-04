@@ -777,7 +777,7 @@ def handle_user_error(err):
 
 @blueprint.errorhandler(AuthError)
 def handle_auth_error(err):
-    return flask.jsonify(error=str(err)), 403
+    return flask.jsonify(error=str(err) + "zzzzz"), 403
 
 
 @blueprint.errorhandler(AuthzError)
