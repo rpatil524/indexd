@@ -137,6 +137,7 @@ class SQLAlchemyAuthDriver(AuthDriverABC):
                 authorized = self.arborist.auth_request(
                     get_jwt_token(), "indexd", method, resource
                 )
+                logger.debug("[SAI] authorized response is {}".format(authorized))
             except Exception as e:
                 logger.error(
                     f"Request to Arborist failed; now checking admin access. Details:\n{e}"
@@ -154,6 +155,9 @@ class SQLAlchemyAuthDriver(AuthDriverABC):
                         get_jwt_token(), "indexd", method, ["/programs"]
                     )
                 if not is_admin:
+                    logger.debug(
+                        "[SAI] Permission denied because of not authorized and not is_admin"
+                    )
                     raise AuthError("Permission denied.")
         except Exception as err:
             logger.error(err)
