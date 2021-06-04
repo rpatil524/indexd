@@ -782,7 +782,7 @@ def handle_auth_error(err):
 
 @blueprint.errorhandler(AuthzError)
 def handle_authz_error(err):
-    return flask.jsonify(error=str(err)), 401
+    return flask.jsonify(error=str(err) + "zzzzz"), 401
 
 
 @blueprint.errorhandler(RevisionMismatch)
