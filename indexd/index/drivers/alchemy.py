@@ -746,7 +746,7 @@ class SQLAlchemyIndexDriver(IndexDriverABC):
         """
         # if an authz is provided, ensure that user can actually create for that resource
         authorized = False
-        authz_err_msg = "Auth error when attempting to update a blank record. User must have '{}' access on '{}' for service 'indexd'."
+        authz_err_msg = "Auth error when attempting to create a blank record. User must have '{}' access on '{}' for service 'indexd'."
         if authz:
             try:
                 auth.authorize("create", authz)
@@ -873,6 +873,7 @@ class SQLAlchemyIndexDriver(IndexDriverABC):
                 try:
                     auth.authorize("file_upload", ["/data_file"])
                 except AuthError as err:
+                    self.logger.error(err)
                     self.logger.error(authz_err_msg.format("file_upload", "/data_file"))
                     raise
 
@@ -1326,7 +1327,7 @@ class SQLAlchemyIndexDriver(IndexDriverABC):
         If authz is not specified, acl/authz fields carry over from previous version.
         """
         # if an authz is provided, ensure that user can actually create for that resource
-        authz_err_msg = "Auth error when attempting to update a record. User must have '{}' access on '{}' for service 'indexd'."
+        authz_err_msg = "Auth error when attempting to create a blank version. User must have '{}' access on '{}' for service 'indexd'."
         if authz:
             try:
                 auth.authorize("create", authz)
