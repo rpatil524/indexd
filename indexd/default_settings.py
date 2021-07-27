@@ -4,6 +4,8 @@ from .auth.drivers.alchemy import SQLAlchemyAuthDriver
 
 CONFIG = {}
 
+CONFIG["GA4GH_DRS_POSTED_PASSPORT_FIELD"] = "auth"
+
 CONFIG["JSONIFY_PRETTYPRINT_REGULAR"] = False
 AUTO_MIGRATE = True
 

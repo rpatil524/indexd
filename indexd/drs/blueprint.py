@@ -1,5 +1,6 @@
 import flask
 import json
+from indexd.config import config
 from indexd.errors import AuthError, AuthzError
 from indexd.errors import UserError
 from indexd.index.errors import NoRecordFound as IndexNoRecordFound
@@ -70,13 +71,18 @@ def list_drs_records():
     methods=["GET"],
 )
 @blueprint.route(
-    "/ga4gh/drs/v1/objects/<path:object_id>/access/<path:access_id>", methods=["GET"]
+    "/ga4gh/drs/v1/objects/<path:object_id>/access/<path:access_id>",
+    methods=["GET", "POST"],
 )
 def get_signed_url(object_id, access_id):
     if not access_id:
         raise (UserError("Access ID/Protocol is required."))
     res = flask.current_app.fence_client.get_signed_url_for_object(
-        object_id=object_id, access_id=access_id
+        object_id=object_id,
+        access_id=access_id,
+        passport=flask.request.get_json(force=True, silent=True).get(
+            flask.current_app.config["GA4GH_DRS_POSTED_PASSPORT_FIELD"]
+        ),
     )
     if not res:
         raise IndexNoRecordFound("No signed url found")

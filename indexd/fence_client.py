@@ -16,7 +16,7 @@ class FenceClient(object):
     def __init__(self, url):
         self.url = url
 
-    def get_signed_url_for_object(self, object_id, access_id):
+    def get_signed_url_for_object(self, object_id, access_id, passport=None):
         fence_server = self.url
         api_url = fence_server.rstrip("/") + "/data/download/"
         url = api_url + object_id
@@ -29,7 +29,18 @@ class FenceClient(object):
             if flask.request.query_string:
                 url = f"{url}&{flask.request.query_string.decode()}"
         try:
-            req = requests.get(url, headers=headers)
+            if not passport:
+                req = requests.get(url, headers=headers)
+            else:
+                req = requests.post(
+                    url,
+                    headers=headers,
+                    body={
+                        flask.current_app.config[
+                            "GA4GH_DRS_POSTED_PASSPORT_FIELD"
+                        ]: passport
+                    },
+                )
         except Exception as e:
             logger.error("failed to reach fence at {0}: {1}".format(url + object_id, e))
             raise IndexdUnexpectedError("Failed to retrieve access url")
